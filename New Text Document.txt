@@ -1,0 +1,38 @@
+Prompt de Actualización: Quantum V27 Elite
+Actúa como un Ingeniero Senior de Software y Experto en Trading Cuántico. >
+Objetivo: Elevar el sistema "Quantum Intelligence V27" para que supere visual y funcionalmente a la arquitectura "Market Bridge".
+
+Tareas de Integración Requeridas:
+
+Sincronización de Visión: Modifica el chart_engine_v27_pro.js para asegurar que el canvas principal tenga el ID 'chart-main-canvas' y activa willReadFrequently: true.
+
+Enfoque de 3 Velas: Configura el zoom del motor y el sistema de captura de quantum_logic_v27.js para que la red neuronal CNN analice prioritariamente las últimas 3 velas, ajustando el ancho de vela a 25px para máxima nitidez visual.
+
+HUD Holográfico: Implementa en el overlay un sistema de "Targeting" que dibuje un recuadro de escaneo animado (estilo neón cian) sobre las velas analizadas.
+
+Fusión de Motores: Conecta el quantumConfidence de la lógica cuántica con el Kelly Criterion de la gestión de riesgo, para que el tamaño de la operación dependa de la energía cuántica detectada.
+
+Restricciones: Mantener la estética futurista (fuentes Orbitron/JetBrains Mono) y asegurar que todo el procesamiento visual ocurra dentro de tf.tidy() para evitar fugas de memoria.
+
+💎 5 Peticiones Extra para SUPERAR la versión actual
+Si quieres que la V27 sea algo que nadie haya visto antes, pídeme (o pide a la IA) estos 5 módulos adicionales. Esto la pondrá en el nivel de "Tecnología Prohibida":
+
+"Módulo de Entrelazamiento Temporal":
+
+Qué pedir: "Crea una función que compare el patrón de las últimas 3 velas con los fractales históricos más exitosos almacenados en un buffer de memoria, asignando un 'Grado de Similitud Cuántica'."
+
+"Filtro Anti-Manipulación de Ballenas":
+
+Qué pedir: "Implementa un detector de anomalías volumétricas que haga que el gráfico parpadee en rojo cuando detecte que las últimas 3 velas tienen un volumen artificial que no coincide con el movimiento del precio (Detección de Spoofing)."
+
+"IA de Auto-Corrección (Self-Learning)":
+
+Qué pedir: "Añade un bucle de retroalimentación donde, si la IA falla una predicción, el sistema guarde el pantallazo del canvas en un set de entrenamiento local y ejecute un model.fit() rápido para no cometer el mismo error dos veces."
+
+"Efecto visual 'Velo de Incertidumbre'":
+
+Qué pedir: "Haz que el fondo del gráfico genere partículas de 'humo' digital. Cuando la probabilidad cuántica sea baja, el humo debe ser denso; cuando la señal colapse en una oportunidad clara, el humo debe desaparecer dejando el gráfico cristalino."
+
+"Sonido Paramétrico Cuántico":
+
+Qué pedir: "Genera una notificación auditiva mediante Web Audio API que emita un pulso de baja frecuencia cuando el mercado esté en superposición y un 'ping' de alta frecuencia cuando se detecte una señal de confianza superior al 90%."

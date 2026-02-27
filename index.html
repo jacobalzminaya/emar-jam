@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>V27 Quantum Trading Intelligence</title>
+    
+    <!-- Fuentes Tecnológicas -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=JetBrains+Mono:wght@300;400;500;700&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- TensorFlow.js para IA Cuántica -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.10.0/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-vis@1.5.1/dist/tfjs-vis.umd.min.js"></script>
+    
+    <style>
+        :root {
+            --quantum-primary: #00d4ff;
+            --quantum-secondary: #ff00aa;
+            --quantum-accent: #ffb400;
+            --quantum-bull: #00ffaa;
+            --quantum-bear: #ff4d82;
+            --quantum-bg: #0a0a1a;
+            --quantum-panel: rgba(10, 10, 30, 0.95);
+            --quantum-glow: 0 0 20px rgba(0, 212, 255, 0.5);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--quantum-bg);
+            color: #e0e0ff;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Fondo Cuántico Animado */
+        .quantum-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(0, 212, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 0, 170, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(255, 180, 0, 0.1) 0%, transparent 50%),
+                var(--quantum-bg);
+        }
+
+        .quantum-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        /* Header Principal */
+        .quantum-header {
+            background: linear-gradient(90deg, rgba(0,212,255,0.1) 0%, transparent 100%);
+            border-bottom: 1px solid rgba(0, 212, 255, 0.3);
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quantum-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0,212,255,0.2), transparent);
+            animation: scan 3s linear infinite;
+        }
+
+        @keyframes scan {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .quantum-logo {
+            font-family: 'Orbitron', monospace;
+            font-size: 24px;
+            font-weight: 900;
+            background: linear-gradient(45deg, #00d4ff, #ff00aa, #ffb400);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+            letter-spacing: 2px;
+        }
+
+        .quantum-badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            padding: 4px 12px;
+            background: rgba(0, 212, 255, 0.2);
+            border: 1px solid var(--quantum-primary);
+            border-radius: 20px;
+            color: var(--quantum-primary);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; box-shadow: 0 0 5px rgba(0,212,255,0.5); }
+            50% { opacity: 0.7; box-shadow: 0 0 20px rgba(0,212,255,0.8); }
+        }
+
+        .quantum-status {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .status-item {
+            text-align: right;
+        }
+
+        .status-label {
+            font-size: 10px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .status-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            color: var(--quantum-primary);
+            font-weight: 600;
+        }
+
+        .quantum-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--quantum-bull);
+            box-shadow: 0 0 10px var(--quantum-bull);
+            animation: quantum-pulse 1.5s infinite;
+        }
+
+        @keyframes quantum-pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.8; }
+        }
+
+        /* Layout Principal */
+        .v27-dashboard {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 20px;
+            padding: 20px;
+            max-width: 1920px;
+            margin: 0 auto;
+        }
+
+        /* SECCIÓN DEL CHART - AHORA VISIBLE Y FUNCIONAL */
+        .chart-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Contenedor del Chart de Velas - ESTE ES EL IMPORTANTE */
+        #chart-pattern-container {
+            display: block !important; /* Forzar visibilidad */
+            background: rgba(10, 10, 30, 0.95);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 16px;
+            overflow: hidden;
+            min-height: 500px;
+            position: relative;
+        }
+
+        /* Panel de Trading (Compra/Venta) */
+        .trading-panel {
+            background: var(--quantum-panel);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 10px;
+        }
+
+        .trading-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .btn-trade {
+            padding: 20px;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Orbitron', monospace;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-trade::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .btn-trade:hover::before {
+            left: 100%;
+        }
+
+        .btn-buy {
+            background: linear-gradient(135deg, rgba(0, 255, 170, 0.2), rgba(0, 255, 170, 0.05));
+            border: 2px solid var(--quantum-bull);
+            color: var(--quantum-bull);
+            box-shadow: 0 0 20px rgba(0, 255, 170, 0.2);
+        }
+
+        .btn-buy:hover {
+            background: rgba(0, 255, 170, 0.3);
+            box-shadow: 0 0 30px rgba(0, 255, 170, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .btn-sell {
+            background: linear-gradient(135deg, rgba(255, 77, 130, 0.2), rgba(255, 77, 130, 0.05));
+            border: 2px solid var(--quantum-bear);
+            color: var(--quantum-bear);
+            box-shadow: 0 0 20px rgba(255, 77, 130, 0.2);
+        }
+
+        .btn-sell:hover {
+            background: rgba(255, 77, 130, 0.3);
+            box-shadow: 0 0 30px rgba(255, 77, 130, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .trade-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+        }
+
+        .trade-label {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .trade-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--quantum-primary);
+        }
+
+        /* Panel de Control Cuántico */
+        .quantum-control-panel {
+            background: var(--quantum-panel);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 16px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .panel-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 14px;
+            color: var(--quantum-primary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .quantum-switches {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .quantum-switch {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s;
+        }
+
+        .quantum-switch:hover {
+            border-color: rgba(0, 212, 255, 0.3);
+            background: rgba(0, 212, 255, 0.05);
+        }
+
+        .switch-label {
+            font-size: 13px;
+            color: #aaa;
+        }
+
+        .switch-toggle {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            background: rgba(100, 100, 100, 0.3);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .switch-toggle.active {
+            background: var(--quantum-primary);
+        }
+
+        .switch-toggle::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: 0.3s;
+        }
+
+        .switch-toggle.active::after {
+            left: 22px;
+        }
+
+        /* Señal Cuántica Principal */
+        .quantum-signal-display {
+            background: linear-gradient(135deg, rgba(0,212,255,0.1), rgba(255,0,170,0.05));
+            border: 2px solid rgba(0, 212, 255, 0.3);
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quantum-signal-display::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, rgba(0,212,255,0.1), transparent 30%);
+            animation: rotate 4s linear infinite;
+        }
+
+        @keyframes rotate {
+            100% { transform: rotate(360deg); }
+        }
+
+        .signal-inner {
+            position: relative;
+            z-index: 1;
+        }
+
+        .signal-label {
+            font-size: 12px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        .signal-value {
+            font-family: 'Orbitron', monospace;
+            font-size: 36px;
+            font-weight: 900;
+            margin-bottom: 10px;
+            transition: all 0.5s;
+        }
+
+        .signal-value.BUY { color: var(--quantum-bull); text-shadow: 0 0 30px rgba(0, 255, 170, 0.5); }
+        .signal-value.SELL { color: var(--quantum-bear); text-shadow: 0 0 30px rgba(255, 77, 130, 0.5); }
+        .signal-value.HOLD, .signal-value.ESPERAR { color: var(--quantum-accent); text-shadow: 0 0 30px rgba(255, 180, 0, 0.5); }
+
+        .signal-confidence {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            color: var(--quantum-primary);
+        }
+
+        .quantum-wave {
+            height: 60px;
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .wave-bar {
+            position: absolute;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(to top, var(--quantum-primary), transparent);
+            border-radius: 2px;
+            animation: wave 1.2s ease-in-out infinite;
+        }
+
+        @keyframes wave {
+            0%, 100% { height: 20%; opacity: 0.3; }
+            50% { height: 100%; opacity: 1; }
+        }
+
+        /* Métricas Cuánticas */
+        .quantum-metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .metric-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--quantum-primary);
+        }
+
+        .metric-label {
+            font-size: 11px;
+            color: #666;
+            margin-top: 5px;
+            text-transform: uppercase;
+        }
+
+        /* Panel de Datos de Mercado */
+        .market-data-panel {
+            background: var(--quantum-panel);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .data-row:last-child {
+            border-bottom: none;
+        }
+
+        .data-label {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .data-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .data-value.positive { color: var(--quantum-bull); }
+        .data-value.negative { color: var(--quantum-bear); }
+
+        /* Logs Cuánticos */
+        .quantum-logs {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 12px;
+            padding: 15px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            height: 150px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+
+        .log-entry {
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: #888;
+        }
+
+        .log-entry.quantum { color: var(--quantum-primary); }
+        .log-entry.signal { color: var(--quantum-accent); }
+        .log-entry.error { color: var(--quantum-bear); }
+        .log-entry.buy { color: var(--quantum-bull); }
+        .log-entry.sell { color: var(--quantum-bear); }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .v27-dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Scrollbar personalizada */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 212, 255, 0.3);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 212, 255, 0.5);
+        }
+
+        /* Estilos para el chart interno (generado por JS) */
+        .chart-pro-header {
+            background: linear-gradient(90deg, rgba(0,212,255,0.1), transparent) !important;
+        }
+        
+        .chart-pro-toolbar {
+            background: rgba(0,0,0,0.3) !important;
+        }
+        
+        .chart-info-panel {
+            background: rgba(0,0,0,0.2) !important;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Fondo Cuántico -->
+    <div class="quantum-bg"></div>
+    <canvas class="quantum-particles" id="particle-canvas"></canvas>
+
+    <!-- Header -->
+    <header class="quantum-header">
+        <div class="logo-section">
+            <div class="quantum-logo">V27 QUANTUM</div>
+            <span class="quantum-badge">INTELLIGENCE ACTIVE</span>
+        </div>
+        <div class="quantum-status">
+            <div class="status-item">
+                <div class="status-label">Estado del Sistema</div>
+                <div class="status-value" id="system-status">ONLINE</div>
+            </div>
+            <div class="status-item">
+                <div class="status-label">Precisión IA</div>
+                <div class="status-value" id="ai-accuracy">--%</div>
+            </div>
+            <div class="quantum-indicator" id="system-indicator"></div>
+        </div>
+    </header>
+
+    <!-- Dashboard Principal -->
+    <main class="v27-dashboard">
+        
+        <!-- Sección Izquierda: Chart, Trading y Logs -->
+        <section class="chart-section">
+            
+            <!-- CONTENEDOR DEL GRÁFICO DE VELAS - AHORA VISIBLE -->
+            <div id="chart-pattern-container"></div>
+            
+            <!-- PANEL DE TRADING: BOTONES COMPRA/VENTA -->
+            <div class="trading-panel">
+                <div class="panel-title">
+                    <span>💹</span> Ejecución de Trading
+                </div>
+                
+                <div class="trade-info">
+                    <div>
+                        <div class="trade-label">Precio Actual</div>
+                        <div class="trade-value" id="current-price-display">---.--</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div class="trade-label">Señal del Sistema</div>
+                        <div class="trade-value" id="system-signal-display" style="color: #ffb400;">ESPERAR</div>
+                    </div>
+                </div>
+
+                <div class="trading-buttons">
+                    <button class="btn-trade btn-buy" onclick="executeTrade('A')">
+                        <div>⬆ COMPRAR</div>
+                        <div style="font-size: 12px; opacity: 0.8; margin-top: 5px;">Alta/Bullish</div>
+                    </button>
+                    <button class="btn-trade btn-sell" onclick="executeTrade('B')">
+                        <div>⬇ VENDER</div>
+                        <div style="font-size: 12px; opacity: 0.8; margin-top: 5px;">Baja/Bearish</div>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Logs del Sistema -->
+            <div class="quantum-logs" id="system-logs">
+                <div class="log-entry quantum">[QuantumV27] Sistema de inteligencia cuántica iniciado...</div>
+                <div class="log-entry">[ChartV27] Esperando inicialización del motor de gráficos...</div>
+                <div class="log-entry">[Trading] Panel de ejecución listo</div>
+            </div>
+        </section>
+
+        <!-- Panel de Control Derecho -->
+        <aside class="control-section">
+            
+            <!-- Panel de Control Cuántico -->
+            <div class="quantum-control-panel">
+                <div class="panel-title">
+                    <span>⚡</span> Control Cuántico
+                </div>
+                
+                <div class="quantum-switches">
+                    <div class="quantum-switch">
+                        <span class="switch-label">Análisis Visual CNN</span>
+                        <div class="switch-toggle active" id="toggle-cnn" onclick="toggleSwitch(this)"></div>
+                    </div>
+                    <div class="quantum-switch">
+                        <span class="switch-label">Entrelazamiento Cuántico</span>
+                        <div class="switch-toggle active" id="toggle-quantum" onclick="toggleSwitch(this)"></div>
+                    </div>
+                    <div class="quantum-switch">
+                        <span class="switch-label">Auto-Entrenamiento</span>
+                        <div class="switch-toggle active" id="toggle-learning" onclick="toggleSwitch(this)"></div>
+                    </div>
+                    <div class="quantum-switch">
+                        <span class="switch-label">Proyección Predictiva</span>
+                        <div class="switch-toggle active" id="toggle-projection" onclick="toggleSwitch(this)"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Display de Señal -->
+            <div class="quantum-signal-display">
+                <div class="signal-inner">
+                    <div class="signal-label">Señal Cuántica</div>
+                    <div class="signal-value HOLD" id="quantum-signal">ESPERAR</div>
+                    <div class="signal-confidence" id="signal-confidence">Confianza: --%</div>
+                </div>
+                <div class="quantum-wave" id="quantum-wave">
+                    <!-- Barras de onda generadas por JS -->
+                </div>
+            </div>
+
+            <!-- Métricas -->
+            <div class="quantum-metrics">
+                <div class="metric-card">
+                    <div class="metric-value" id="metric-qubits">8</div>
+                    <div class="metric-label">Qubits Activos</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="metric-entropy">0.42</div>
+                    <div class="metric-label">Entropía</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="metric-predictions">0</div>
+                    <div class="metric-label">Predicciones</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="metric-accuracy">--</div>
+                    <div class="metric-label">Precisión</div>
+                </div>
+            </div>
+
+            <!-- Datos de Mercado -->
+            <div class="market-data-panel">
+                <div class="panel-title">
+                    <span>📊</span> Datos del Mercado
+                </div>
+                <div class="data-row">
+                    <span class="data-label">Precio Actual</span>
+                    <span class="data-value" id="current-price">---.--</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">Tendencia 9/21</span>
+                    <span class="data-value" id="trend-9-21">NEUTRAL</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">Fuerza del Mercado</span>
+                    <span class="data-value" id="market-strength">--%</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">Volatilidad</span>
+                    <span class="data-value" id="volatility">--%</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">Última Actualización</span>
+                    <span class="data-value" id="last-update">--:--:--</span>
+                </div>
+            </div>
+
+        </aside>
+    </main>
+
+    <!-- Scripts del Sistema -->
+    <script src="chart_engine_v27_pro.js"></script>
+    <script src="quantum_logic_v27.js"></script>
+    
+    <script>
+        // Variables globales para datos de mercado
+        window.sequence = window.sequence || [];
+        window.userManualSequence = window.userManualSequence || [];
+        
+        // Función para ejecutar trades (simulada)
+        // Función corregida para ejecutar trades
+function executeTrade(direction) {
+    const timestamp = Date.now();
+    
+    // Agregar a secuencia manual
+    if (!window.userManualSequence) window.userManualSequence = [];
+    
+    window.userManualSequence.push({
+        val: direction,
+        prediction: direction,
+        timestamp: timestamp
+    });
+    
+    if (window.userManualSequence.length > 50) {
+        window.userManualSequence.shift();
+    }
+    
+    // Actualizar chart inmediatamente
+    if (window.chartEngine) {
+        // Cambiar a vista TU si está en IA
+        if (window.chartEngine.state.view === 'IA') {
+            window.chartEngine.state.view = 'TU';
+        }
+        window.chartEngine.forceUpdate();
+    }
+    
+    // Log
+    const type = direction === 'A' ? 'buy' : 'sell';
+    const label = direction === 'A' ? 'COMPRA' : 'VENTA';
+    addLog(`Trade ejecutado: ${label} @ ${new Date(timestamp).toLocaleTimeString()}`, type);
+    
+    // Actualizar displays
+    updateTradingDisplay();
+}
+        
+        // Actualizar displays de trading
+        function updateTradingDisplay() {
+            if (window.chartEngine && window.chartEngine.state.data.length > 0) {
+                const lastPrice = window.chartEngine.state.data[window.chartEngine.state.data.length - 1].close;
+                document.getElementById('current-price-display').textContent = lastPrice.toFixed(2);
+                document.getElementById('current-price').textContent = lastPrice.toFixed(2);
+                
+                if (window.chartEngine.state.recommendation) {
+                    const rec = window.chartEngine.state.recommendation.action;
+                    document.getElementById('system-signal-display').textContent = rec;
+                    document.getElementById('system-signal-display').style.color = 
+                        rec.includes('COMPRA') ? '#00ffaa' : 
+                        rec.includes('VENTA') ? '#ff4d82' : '#ffb400';
+                }
+            }
+        }
+
+        // Utilidades del Sistema
+        function toggleSwitch(element) {
+            element.classList.toggle('active');
+            const isActive = element.classList.contains('active');
+            const id = element.id;
+            
+            // Actualizar configuración del motor cuántico
+            if (window.quantumEngine) {
+                switch(id) {
+                    case 'toggle-cnn':
+                        window.quantumEngine.config.cnn.enabled = isActive;
+                        break;
+                    case 'toggle-quantum':
+                        window.quantumEngine.config.quantum.enabled = isActive;
+                        break;
+                    case 'toggle-learning':
+                        window.quantumEngine.config.learning.enabled = isActive;
+                        break;
+                    case 'toggle-projection':
+                        window.quantumEngine.config.projection.enabled = isActive;
+                        break;
+                }
+            }
+            
+            addLog(`Configuración ${id}: ${isActive ? 'ACTIVADO' : 'DESACTIVADO'}`, 'quantum');
+        }
+
+        function addLog(message, type = 'normal') {
+            const logs = document.getElementById('system-logs');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logs.appendChild(entry);
+            logs.scrollTop = logs.scrollHeight;
+        }
+
+        // Animación de partículas cuánticas
+        function initParticles() {
+            const canvas = document.getElementById('particle-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            function resize() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            resize();
+            window.addEventListener('resize', resize);
+
+            const particles = [];
+            const particleCount = 50;
+
+            for (let i = 0; i < particleCount; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    vx: (Math.random() - 0.5) * 0.5,
+                    vy: (Math.random() - 0.5) * 0.5,
+                    size: Math.random() * 2,
+                    opacity: Math.random() * 0.5
+                });
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                particles.forEach((p, i) => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+
+                    if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+                    if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(0, 212, 255, ${p.opacity})`;
+                    ctx.fill();
+
+                    // Conectar partículas cercanas
+                    particles.slice(i + 1).forEach(p2 => {
+                        const dx = p.x - p2.x;
+                        const dy = p.y - p2.y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (dist < 100) {
+                            ctx.beginPath();
+                            ctx.moveTo(p.x, p.y);
+                            ctx.lineTo(p2.x, p2.y);
+                            ctx.strokeStyle = `rgba(0, 212, 255, ${0.1 * (1 - dist/100)})`;
+                            ctx.stroke();
+                        }
+                    });
+                });
+
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        // Generar barras de onda cuántica
+        function initQuantumWave() {
+            const container = document.getElementById('quantum-wave');
+            for (let i = 0; i < 20; i++) {
+                const bar = document.createElement('div');
+                bar.className = 'wave-bar';
+                bar.style.left = `${i * 5}%`;
+                bar.style.animationDelay = `${i * 0.1}s`;
+                bar.style.height = `${20 + Math.random() * 60}%`;
+                container.appendChild(bar);
+            }
+        }
+
+        // Actualizar métricas en tiempo real
+        function updateMetrics() {
+            if (window.quantumEngine) {
+                const state = window.quantumEngine.state;
+                
+                document.getElementById('metric-predictions').textContent = state.totalPredictions;
+                document.getElementById('metric-accuracy').textContent = 
+                    state.accuracy > 0 ? `${state.accuracy.toFixed(1)}%` : '--';
+                
+                if (state.lastPrediction) {
+                    const signalMap = {1: 'COMPRA', '-1': 'VENTA', 0: 'ESPERAR'};
+                    const signalText = signalMap[state.lastPrediction.signal] || 'ESPERAR';
+                    document.getElementById('quantum-signal').textContent = signalText;
+                    document.getElementById('quantum-signal').className = `signal-value ${signalText}`;
+                    document.getElementById('signal-confidence').textContent = 
+                        `Confianza: ${(state.lastPrediction.confidence * 100).toFixed(1)}%`;
+                }
+            }
+
+            // Actualizar datos del chart engine
+            updateTradingDisplay();
+
+            document.getElementById('last-update').textContent = new Date().toLocaleTimeString();
+        }
+
+        // Inicialización
+        // INICIALIZACIÓN CORREGIDA
+document.addEventListener('DOMContentLoaded', () => {
+    initParticles();
+    initQuantumWave();
+    
+    // Inicializar arrays de datos globales PRIMERO
+    window.sequence = [];
+    window.userManualSequence = [];
+    
+    // Generar datos de ejemplo iniciales
+    console.log('[System] Generando datos iniciales...');
+    let basePrice = 100;
+    for (let i = 0; i < 50; i++) {
+        const isA = Math.random() > 0.5;
+        window.sequence.push({
+            val: isA ? 'A' : 'B',
+            timestamp: Date.now() - (50 - i) * 1000
+        });
+    }
+    
+    // Actualizar métricas cada segundo
+    setInterval(updateMetrics, 1000);
+    
+    // Inicializar chart cuando esté listo
+    const checkChart = setInterval(() => {
+        if (window.chartEngine) {
+            console.log('[System] ChartEngine detectado, cargando datos...');
+            window.chartEngine.forceUpdate();
+            clearInterval(checkChart);
+            addLog('Datos iniciales cargados: 50 velas', 'quantum');
+        }
+    }, 100);
+    
+    addLog('Interfaz V27 cargada correctamente', 'quantum');
+    addLog('Sistema listo para trading', 'signal');
+});
+
+        // Exponer funciones globales
+        window.addLog = addLog;
+        window.updateMetrics = updateMetrics;
+        window.executeTrade = executeTrade;
+    </script>
+
+</body>
+</html>
